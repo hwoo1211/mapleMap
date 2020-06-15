@@ -32,5 +32,13 @@ selection.onchange = function() {
             break;
     }
 
+    let mapinfo_json = JSON.parse(Get(url));
+    let origin = mapinfo_json["baseImage"][0]["origin"]
+    let points = [];
+    for(let i = 0; i < mapinfo_json["maps"].length; i++)
+    {
+        points.push(mapinfo_json["maps"][i]["spot"]["value"])
+    }
+
 }
 
