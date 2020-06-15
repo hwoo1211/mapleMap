@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="">
+        
+        <title>메이플스토리 월드맵</title>
+    </head>
+
+    <body>
+        <div id="selection">
+            <form>
+                <select id="world" for="world">
+                    <option value="maple">메이플 월드</option>
+                    <option value="grandis">그란디스</option>
+                    <option value="arcane">아케인리버</option>
+                </select>
+    
+                <select id="town" for="town">
+                    <option value="default">세부지역 선택</option>
+                </select>
+            </form>
+        </div>
+        
+        <div id="map">
+            <img src="images/WorldMap.png" id="mapvis">
+        </div>
+
+        <script src="getPoints.js"></script>
+        <div id="search">
+
+        </div>
+    </body>
+</html>
