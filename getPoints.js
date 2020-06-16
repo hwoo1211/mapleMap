@@ -1,19 +1,32 @@
+/* HTML DOM Elements */
+
+var wSelection = document.querySelector('#world')
+var pts = document.getElementById("points")
+
+/* Event Listeners */
+
+wSelection.addEventListener("change", loadMap);
+
+
+
+
+/* All the functions required for this js file */
+
 /* This function is to fetch data from the maplestory.io in json form*/
 //var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-function Get(yourUrl){
-    var Httpreq = new XMLHttpRequest(); // a new request
-    Httpreq.open("GET",yourUrl,false);
-    Httpreq.send(null);
-    return Httpreq.responseText;          
+function Get(url){
+    var httpReq = new XMLHttpRequest(); // a new request
+    httpReq.open("GET",url,false);
+    httpReq.send(null);
+    return httpReq.responseText;          
 }
 
-var selection = document.querySelector('#world')
-var pts = document.getElementById("points")
+/* This function takes care of loading the points on the map*/
 
-selection.onchange = function() {
+function loadMap() {
     var url;
-    var val = selection.value
+    var val = wSelection.value
     while (pts.firstChild)
     {
         pts.removeChild(pts.firstChild)
@@ -22,15 +35,15 @@ selection.onchange = function() {
     switch(val) {
         case 'maple':
             url = 'https://maplestory.io/api/KMST/1101/map/worldmap/WorldMap'
-            document.querySelector('#mapvis').src = 'images/WorldMap.png'
+            document.querySelector('#mapvis').src = 'images/wMaps/WorldMap.png'
             break;
         case 'grandis':
             url = 'https://maplestory.io/api/KMST/1101/map/worldmap/GWorldMap'
-            document.querySelector('#mapvis').src = 'images/GWorldMap.png'
+            document.querySelector('#mapvis').src = 'images/wMaps/GWorldMap.png'
             break;
         case 'arcane': 
             url = 'https://maplestory.io/api/KMST/1101/map/worldmap/WorldMap082'
-            document.querySelector('#mapvis').src = 'images/WorldMap082.png'
+            document.querySelector('#mapvis').src = 'images/wMaps/WorldMap082.png'
             break;
         default: 
             alert('Try again later');
@@ -39,16 +52,49 @@ selection.onchange = function() {
 
     let mapinfo_json = JSON.parse(Get(url));
     let origin = mapinfo_json["baseImage"][0]["origin"]["value"]
-    let points = [];
     for(let i = 0; i < mapinfo_json["maps"].length; i++)
     {
+        let type = mapinfo_json["maps"][0]["type"]
         let point = [origin["x"]+mapinfo_json["maps"][i]["spot"]["value"]["x"], origin["y"]+mapinfo_json["maps"][i]["spot"]["value"]["y"]]
-        let imgstr = "<img src='images/mapImage_0.png' class='pts' style='position: absolute; left: " + (point[0]-10).toString() + "px ; top: " + (point[1]-10).toString() + "px;'>"
+        let imgstr = "<img src='images/points/mapImage_" + type +  
+                ".png' class='pts' style='position: absolute; left: " + 
+                (point[0]-returnSize(type)).toString() + "px ; top: " + (point[1]-returnSize(type)).toString() + "px;'>"
 
         document.getElementById('points').innerHTML += imgstr
-        //points.push(point)
     }
-
-    
 }
+
+/* This function returns the radius of each point necessary for
+    the point on the map to adjust correctly */
+
+function returnSize (num) {
+    switch(num)
+    {
+        case 0:
+        case 2:
+            return 10
+
+        case 1:
+        case 28:
+            return 7
+
+        case 3:
+            return 6.5
+
+        case 11:
+            return 9
+
+        case 12: 
+            return 11.5
+
+        case 29:
+            return 9.5
+
+        default:
+            return 10
+    }
+}
+
+
+loadMap(); // Initialize the map
 
