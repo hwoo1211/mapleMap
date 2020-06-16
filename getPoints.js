@@ -1,7 +1,12 @@
 /* HTML DOM Elements */
 
 var wSelection = document.querySelector('#world')
+var tSelection = document.querySelector('#town')
 var pts = document.getElementById("points")
+
+/* Other global variables*/
+
+var links = []
 
 /* Event Listeners */
 
@@ -27,11 +32,30 @@ function Get(url){
 function loadMap() {
     var url;
     var val = wSelection.value
+    tSelection.value = 'default'; 
+
     while (pts.firstChild)
     {
         pts.removeChild(pts.firstChild)
     }
 
+    worldChange(val);
+
+    let mapinfo_json = JSON.parse(Get(url));
+    let origin = mapinfo_json["baseImage"][0]["origin"]["value"]
+    for(let i = 0; i < mapinfo_json["maps"].length; i++)
+    {
+        let type = mapinfo_json["maps"][0]["type"]
+        let point = [origin["x"]+mapinfo_json["maps"][i]["spot"]["value"]["x"], origin["y"]+mapinfo_json["maps"][i]["spot"]["value"]["y"]]
+        let imgstr = "<img src='images/points/mapImage_" + type +  
+                ".png' class='pts' style='position: absolute; left: " + 
+                (point[0]-returnSize(type)).toString() + "px ; top: " + (point[1]-returnSize(type)).toString() + "px;'>"
+
+        document.getElementById('points').innerHTML += imgstr
+    }
+}
+
+function worldChange(val) {
     switch(val) {
         case 'maple':
             url = 'https://maplestory.io/api/KMST/1101/map/worldmap/WorldMap'
@@ -49,20 +73,14 @@ function loadMap() {
             alert('Try again later');
             break;
     }
-
-    let mapinfo_json = JSON.parse(Get(url));
-    let origin = mapinfo_json["baseImage"][0]["origin"]["value"]
-    for(let i = 0; i < mapinfo_json["maps"].length; i++)
-    {
-        let type = mapinfo_json["maps"][0]["type"]
-        let point = [origin["x"]+mapinfo_json["maps"][i]["spot"]["value"]["x"], origin["y"]+mapinfo_json["maps"][i]["spot"]["value"]["y"]]
-        let imgstr = "<img src='images/points/mapImage_" + type +  
-                ".png' class='pts' style='position: absolute; left: " + 
-                (point[0]-returnSize(type)).toString() + "px ; top: " + (point[1]-returnSize(type)).toString() + "px;'>"
-
-        document.getElementById('points').innerHTML += imgstr
-    }
 }
+
+/*function townChange(val) {
+    switch(val) {
+
+    }
+}*/
+
 
 /* This function returns the radius of each point necessary for
     the point on the map to adjust correctly */
