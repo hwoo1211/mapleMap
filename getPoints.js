@@ -7,6 +7,8 @@ var pts = document.getElementById("points")
 /* Other global variables*/
 
 var links = []
+var url;
+var val
 
 /* Event Listeners */
 
@@ -21,17 +23,16 @@ wSelection.addEventListener("change", loadMap);
 //var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 function Get(url){
-    var httpReq = new XMLHttpRequest(); // a new request
-    httpReq.open("GET",url,false);
-    httpReq.send(null);
-    return httpReq.responseText;          
+    var request = new XMLHttpRequest(); // a new request
+    request.open("GET",url,false);
+    request.send(null);
+    return request.responseText;          
 }
 
 /* This function takes care of loading the points on the map*/
 
 function loadMap() {
-    var url;
-    var val = wSelection.value
+    val = wSelection.value
     tSelection.value = 'default'; 
 
     while (pts.firstChild)
@@ -47,8 +48,7 @@ function loadMap() {
     {
         let type = mapinfo_json["maps"][0]["type"]
         let point = [origin["x"]+mapinfo_json["maps"][i]["spot"]["value"]["x"], origin["y"]+mapinfo_json["maps"][i]["spot"]["value"]["y"]]
-        let imgstr = "<img src='images/points/mapImage_" + type +  
-                ".png' class='pts' style='position: absolute; left: " + 
+        let imgstr = "<img src='images/points/mapImage_" + type + ".png' class='pts' style='position: absolute; left: " + 
                 (point[0]-returnSize(type)).toString() + "px ; top: " + (point[1]-returnSize(type)).toString() + "px;'>"
 
         document.getElementById('points').innerHTML += imgstr
