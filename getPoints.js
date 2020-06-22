@@ -7,13 +7,25 @@ var pts = document.getElementById("points")
 /* Other global variables*/
 
 var links = []
+var baseWorldMapUrl = 'https://maplestory.io/api/KMST/1101/map/worldmap/'
+var baseMapUrl = 'https://maplestory.io/api/KMST/1101/map/'
 var url;
 var val
 
 /* Event Listeners */
 
-wSelection.addEventListener("change", loadMap);
-
+wSelection.addEventListener("change", function () {
+    initializeDropdown();
+    mapChange(wSelection.value)
+    loadMap()
+});
+tSelection.addEventListener("change", function () {
+    if(tSelection.value != 'default')
+    {
+        mapChange(tSelection.value)
+        loadMap()
+    }
+});
 
 
 
@@ -26,53 +38,84 @@ function Get(url){
     var request = new XMLHttpRequest(); // a new request
     request.open("GET",url,false);
     request.send(null);
-    return request.responseText;          
+    if (request.status != 404)
+    {
+        
+        return request.responseText;
+    }
+    else
+        return null;           
+}
+
+function getTownName(mapNum) {
+    let tempMap = baseMapUrl + mapNum.toString();
+    let tempMapinfo_json = JSON.parse(Get(tempMap))
+    let name = tempMapinfo_json["name"]
+
+    if(name != null)
+        return name.toString()
+    else    
+        return null
+}
+
+function initializeDropdown() {
+    while (tSelection.options.length != 1)
+    {
+        tSelection.options.remove(tSelection.options.length - 1)
+    }
+    tSelection.value = 'default';
 }
 
 /* This function takes care of loading the points on the map*/
 
 function loadMap() {
-    val = wSelection.value
-    tSelection.value = 'default'; 
+    links = []
+    
 
     while (pts.firstChild)
     {
         pts.removeChild(pts.firstChild)
     }
 
-    worldChange(val);
-
     let mapinfo_json = JSON.parse(Get(url));
     let origin = mapinfo_json["baseImage"][0]["origin"]["value"]
     for(let i = 0; i < mapinfo_json["maps"].length; i++)
     {
-        let type = mapinfo_json["maps"][0]["type"]
+        let type = mapinfo_json["maps"][i]["type"]
         let point = [origin["x"]+mapinfo_json["maps"][i]["spot"]["value"]["x"], origin["y"]+mapinfo_json["maps"][i]["spot"]["value"]["y"]]
-        let imgstr = "<img src='images/points/mapImage_" + type + ".png' class='pts' style='position: absolute; left: " + 
+        let imgstr = "<img src='images/points/mapImage_" + type + ".png'" + 
+                /*"id='" + getTownName(mapinfo_json["maps"][i]["mapNumbers"][0]) + "'" +*/
+                "class='pts' style='position: absolute; left: " + 
                 (point[0]-returnSize(type)).toString() + "px ; top: " + (point[1]-returnSize(type)).toString() + "px;'>"
 
         document.getElementById('points').innerHTML += imgstr
     }
+
+    for (let j = 0; j < mapinfo_json["links"].length; j++)
+    {
+        var opt = document.createElement("option")
+
+        opt.text = mapinfo_json["links"][j]["toolTip"]
+        opt.value = mapinfo_json["links"][j]["linksTo"]
+
+        tSelection.options.add(opt);
+    }
+
+    //let maps = []
+    
+    /*for (let k = 0; k < mapinfo_json["maps"].length; k++) 
+    {
+        let tempMap = baseMapUrl + mapinfo_json["maps"][k]["mapNumbers"][0].toString();
+        let tempMapinfo_json = JSON.parse(Get(tempMap))
+        maps.push(tempMapinfo_json["name"])
+
+
+    }*/
 }
 
-function worldChange(val) {
-    switch(val) {
-        case 'maple':
-            url = 'https://maplestory.io/api/KMST/1101/map/worldmap/WorldMap'
-            document.querySelector('#mapvis').src = 'images/wMaps/WorldMap.png'
-            break;
-        case 'grandis':
-            url = 'https://maplestory.io/api/KMST/1101/map/worldmap/GWorldMap'
-            document.querySelector('#mapvis').src = 'images/wMaps/GWorldMap.png'
-            break;
-        case 'arcane': 
-            url = 'https://maplestory.io/api/KMST/1101/map/worldmap/WorldMap082'
-            document.querySelector('#mapvis').src = 'images/wMaps/WorldMap082.png'
-            break;
-        default: 
-            alert('Try again later');
-            break;
-    }
+function mapChange(val) {
+    url = baseWorldMapUrl + val;
+    document.querySelector('#mapvis').src = 'images/wMaps/' + val + '.png' 
 }
 
 /*function townChange(val) {
@@ -113,6 +156,6 @@ function returnSize (num) {
     }
 }
 
-
-loadMap(); // Initialize the map
+mapChange(wSelection.value) // Initialize the map
+loadMap(); 
 
