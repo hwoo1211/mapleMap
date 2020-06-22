@@ -99,14 +99,22 @@ function loadMap() {
     }
 
     // Add to the tSelect Dropdown box
+    let towns = []
     for (let j = 0; j < mapinfo_json["links"].length; j++)
     {
         var opt = document.createElement("option")
 
         opt.text = mapinfo_json["links"][j]["toolTip"]
         opt.value = mapinfo_json["links"][j]["linksTo"]
+        opt.id = 'tOption'
 
-        tSelection.options.add(opt);
+        if(!towns.includes(opt.text))
+        {
+            towns.push(opt.text)
+            tSelection.options.add(opt);
+        }
+        else
+            continue
     }
 }
 
