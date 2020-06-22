@@ -1,0 +1,9 @@
+#points {
+    z-index: 3;
+    position: absolute;
+}
+
+#mapvis {
+    z-index: 1;
+    position: absolute;
+}
