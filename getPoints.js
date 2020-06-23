@@ -2,11 +2,14 @@
 
 var wSelection = document.querySelector('#world')   // World selection dropdown box
 var tSelection = document.querySelector('#town')    // Town selection dropdown box
+var linkImage = document.querySelector('#links')
 var pts = document.getElementById("points")         // All map points
 
 /* Other global variables*/
 
 var links = []  // Array of maps of links
+let towns = []
+var isTownChanged = false
 var baseWorldMapUrl = 'https://maplestory.io/api/KMST/1101/map/worldmap/' // WorldMap URL
 var baseMapUrl = 'https://maplestory.io/api/KMST/1101/map/'               // Map URL
 var url; // Temp url variable that will be used throughout the code
@@ -23,13 +26,21 @@ wSelection.addEventListener("change", function () { // When this box experiences
 
 // Town Seleciton Dropdown Box Event
 tSelection.addEventListener("change", function () { // When this box experiences change
-    if(tSelection.value != 'default') // If the selected option is not default
+    getTownList();
+    if (tSelection.value != 'default') // If the selected option is not default
     {
         mapChange(tSelection.value)   // Then change to appropriate map
         loadMap()                     // Then get the points
     }
 });
 
+linkImage.addEventListener("mouseover", function () {
+    linkImage.style.visibility = 'visible';
+})
+
+linkImage.addEventListener("mouseout", function () {
+    linkImage.style.visibility = 'hidden';
+})
 
 
 /* All the functions required for this js file */
@@ -81,7 +92,9 @@ function loadMap() {
 
     let mapinfo_json = JSON.parse(Get(url)); // Fetch JSON file 
     let origin = mapinfo_json["baseImage"][0]["origin"]["value"] // Find the origin of the map file
-    for(let i = 0; i < mapinfo_json["maps"].length; i++)
+    
+    let mapLength = mapinfo_json["maps"].length
+    for(let i = 0; i < mapLength; i++)
     {
         let type = mapinfo_json["maps"][i]["type"] // This gives the type of point (town, starforce, etc)
 
@@ -99,23 +112,36 @@ function loadMap() {
     }
 
     // Add to the tSelect Dropdown box
-    let towns = []
-    for (let j = 0; j < mapinfo_json["links"].length; j++)
+    
+    let linkLength = mapinfo_json["links"].length
+    // This loop below could be a function imo
+    for (let j = 0; j < linkLength; j++)
     {
         var opt = document.createElement("option")
 
         opt.text = mapinfo_json["links"][j]["toolTip"]
         opt.value = mapinfo_json["links"][j]["linksTo"]
-        opt.id = 'tOption'
-
-        if(!towns.includes(opt.text))
+        
+        if (isTownChanged && !towns.includes(opt.text))
         {
-            towns.push(opt.text)
-            tSelection.options.add(opt);
+            opt.id = 'tOption-a'
+            tSelection.options.add(opt, tSelection.selectedIndex + 1);
+            towns.push(opt.value)
+        }
+        else if (towns.includes(opt.text))
+        {
+            continue;
         }
         else
-            continue
+        {
+            opt.id = 'tOption'
+            tSelection.options.add(opt);
+        }
+       
     }
+
+    isTownChanged = false;
+    getLinkImage(mapinfo_json)
 }
 
 
@@ -125,6 +151,15 @@ function mapChange(val) {
     document.querySelector('#mapvis').src = 'images/wMaps/' + val + '.png' 
 }
 
+function getTownList() {
+    towns = []
+    isTownChanged = true;
+    for(let i = 0; i < tSelection.options.length; i++)
+    {
+        towns.push(tSelection.options[i].text)
+    }
+    
+}
 
 
 /* This function returns the radius of each point necessary for
@@ -158,6 +193,16 @@ function returnSize (num) {
     }
 }
 
+function getLinkImage(mapInfo) {
+
+    // Highlighted location = mapOrigin - imageOrigin
+    let imgstr = "<img src='images/linkImages/WorldMap/linkImg_0.png'" + 
+                 " style='visibility: hidden;'>" // this is image source
+               
+    // Add to HTML
+    document.getElementById('links').innerHTML += imgstr
+
+}
 
 
 // Functions to be run on initial load

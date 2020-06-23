@@ -1,13 +1,22 @@
 #points {
+    z-index: 4;
+    position: absolute;
+}
+
+#links {
     z-index: 3;
     position: absolute;
 }
 
 #mapvis {
-    z-index: 1;
+    z-index: 2;
     position: absolute;
 }
 
 #tOption {
     color: skyblue;
+}
+
+#tOption-a {
+    color : black;
 }
