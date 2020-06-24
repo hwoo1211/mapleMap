@@ -14,13 +14,12 @@ var isTownChanged = false
 var baseWorldMapUrl = 'https://maplestory.io/api/KMST/1101/map/worldmap/' // WorldMap URL
 var baseMapUrl = 'https://maplestory.io/api/KMST/1101/map/'               // Map URL
 var url; // Temp url variable that will be used throughout the code
-var val // Temp variable 
 
 /* Event Listeners */
 
 // World Selection Dropdown Box Event
 wSelection.addEventListener("change", function () { // When this box experiences change
-    initialize();         // Delete extraneous towns in tSelect dropdown box
+    initializeDropdown();         // Delete extraneous towns in tSelect dropdown box
     mapChange(wSelection.value)   // Change to appropriate map
     loadMap()                     // Then get the points
 });
@@ -67,7 +66,7 @@ function getTownName(mapNum) {
 }
 
 // Initialization  of the tSelection dropdown box. 
-function initialize() {  
+function initializeDropdown() {  
     while (tSelection.options.length != 1)
     {
         tSelection.options.remove(tSelection.options.length - 1) // Remove every element except 'default'
