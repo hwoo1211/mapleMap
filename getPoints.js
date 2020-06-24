@@ -2,7 +2,8 @@
 
 var wSelection = document.querySelector('#world')   // World selection dropdown box
 var tSelection = document.querySelector('#town')    // Town selection dropdown box
-var linkImage = document.querySelector('#links')
+var linkImage = document.getElementsByClassName('linkImgs')
+var link = document.getElementById('links')
 var pts = document.getElementById("points")         // All map points
 
 /* Other global variables*/
@@ -19,7 +20,7 @@ var val // Temp variable
 
 // World Selection Dropdown Box Event
 wSelection.addEventListener("change", function () { // When this box experiences change
-    initializeDropdown();         // Delete extraneous towns in tSelect dropdown box
+    initialize();         // Delete extraneous towns in tSelect dropdown box
     mapChange(wSelection.value)   // Change to appropriate map
     loadMap()                     // Then get the points
 });
@@ -34,13 +35,7 @@ tSelection.addEventListener("change", function () { // When this box experiences
     }
 });
 
-linkImage.addEventListener("mouseover", function () {
-    linkImage.style.visibility = 'visible';
-})
 
-linkImage.addEventListener("mouseout", function () {
-    linkImage.style.visibility = 'hidden';
-})
 
 
 /* All the functions required for this js file */
@@ -72,12 +67,14 @@ function getTownName(mapNum) {
 }
 
 // Initialization  of the tSelection dropdown box. 
-function initializeDropdown() {  
+function initialize() {  
     while (tSelection.options.length != 1)
     {
         tSelection.options.remove(tSelection.options.length - 1) // Remove every element except 'default'
     }
     tSelection.value = 'default'; // Then select the default option
+
+    
 }
 
 /* This function takes care of loading the points on the map*/
@@ -89,6 +86,11 @@ function loadMap() {
     {
         pts.removeChild(pts.firstChild)
     }
+    while (link.firstChild)
+    {
+        link.removeChild(link.firstChild)
+    }
+    
 
     let mapinfo_json = JSON.parse(Get(url)); // Fetch JSON file 
     let origin = mapinfo_json["baseImage"][0]["origin"]["value"] // Find the origin of the map file
@@ -137,11 +139,35 @@ function loadMap() {
             opt.id = 'tOption'
             tSelection.options.add(opt);
         }
+
+        let folder = getFolderName()
+
+        let point = [origin["x"]-mapinfo_json["links"][j]["linkImage"]["origin"]["value"]["x"], 
+                        origin["y"]-mapinfo_json["links"][j]["linkImage"]["origin"]["value"]["y"]]
+
+        let imgstr = "<img src='images/linkImages/" + folder + "/linkImg_" + j + ".png'" + 
+                    " id='" + mapinfo_json["links"][j]["linksTo"] + "'" + 
+                    " class='linkImgs'" + 
+                    " style='position: absolute;" + 
+                            "top: " + point[1] + "px;" + 
+                            "left: " + point[0] + "px;" +
+                            "opacity: 0;'" + 
+                    " onmouseover='this.style.opacity = 1.0;'" + 
+                    " onmouseout='this.style.opacity = 0;'>" // this is image source
+        // Add to HTML
+        document.getElementById('links').innerHTML += imgstr
        
     }
 
     isTownChanged = false;
     getLinkImage(mapinfo_json)
+}
+
+function getFolderName () {
+    if (tSelection.value === 'default')
+        return wSelection.value
+    else  
+        return tSelection.value
 }
 
 
@@ -200,7 +226,6 @@ function getLinkImage(mapInfo) {
                  " style='visibility: hidden;'>" // this is image source
                
     // Add to HTML
-    document.getElementById('links').innerHTML += imgstr
 
 }
 

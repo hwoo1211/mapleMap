@@ -1,16 +1,19 @@
 #points {
-    z-index: 4;
+    z-index: 5;
     position: absolute;
 }
 
 #links {
-    z-index: 3;
     position: absolute;
 }
 
+.linkImgs {
+    z-index: 3;
+}
+
 #mapvis {
-    z-index: 2;
     position: absolute;
+    z-index: 2;
 }
 
 #tOption {
