@@ -5,6 +5,7 @@ var tSelection = document.querySelector('#town')    // Town selection dropdown b
 var linkImage = document.getElementsByClassName('linkImgs')
 var link = document.getElementById('links')
 var pts = document.getElementById("points")         // All map points
+var backButton = document.querySelector('#back')
 
 /* Other global variables*/
 
@@ -14,12 +15,14 @@ var isTownChanged = false
 var baseWorldMapUrl = 'https://maplestory.io/api/KMST/1101/map/worldmap/' // WorldMap URL
 var baseMapUrl = 'https://maplestory.io/api/KMST/1101/map/'               // Map URL
 var url; // Temp url variable that will be used throughout the code
+var folder; 
 
 /* Event Listeners */
 
 // World Selection Dropdown Box Event
 wSelection.addEventListener("change", function () { // When this box experiences change
     initializeDropdown();         // Delete extraneous towns in tSelect dropdown box
+    folder = getFolderName()
     mapChange(wSelection.value)   // Change to appropriate map
     loadMap()                     // Then get the points
 });
@@ -27,6 +30,7 @@ wSelection.addEventListener("change", function () { // When this box experiences
 // Town Seleciton Dropdown Box Event
 tSelection.addEventListener("change", function () { // When this box experiences change
     getTownList();
+    folder = getFolderName()
     if (tSelection.value != 'default') // If the selected option is not default
     {
         mapChange(tSelection.value)   // Then change to appropriate map
@@ -34,6 +38,9 @@ tSelection.addEventListener("change", function () { // When this box experiences
     }
 });
 
+backButton.addEventListener("click", function () {
+    let i = 0;
+})
 
 
 
@@ -123,6 +130,8 @@ function loadMap() {
         opt.text = mapinfo_json["links"][j]["toolTip"]
         opt.value = mapinfo_json["links"][j]["linksTo"]
         
+        // how do i resolve the below if-else statements
+
         if (isTownChanged && !towns.includes(opt.text))
         {
             opt.id = 'tOption-a'
@@ -131,7 +140,7 @@ function loadMap() {
         }
         else if (towns.includes(opt.text))
         {
-            continue;
+            // do nothing
         }
         else
         {
@@ -139,7 +148,8 @@ function loadMap() {
             tSelection.options.add(opt);
         }
 
-        let folder = getFolderName()
+        // The below could be a function as well
+        
 
         let point = [origin["x"]-mapinfo_json["links"][j]["linkImage"]["origin"]["value"]["x"], 
                         origin["y"]-mapinfo_json["links"][j]["linkImage"]["origin"]["value"]["y"]]
@@ -152,14 +162,14 @@ function loadMap() {
                             "left: " + point[0] + "px;" +
                             "opacity: 0;'" + 
                     " onmouseover='this.style.opacity = 1.0;'" + 
-                    " onmouseout='this.style.opacity = 0;'>" // this is image source
+                    " onmouseout='this.style.opacity = 0;'" + 
+                    " onclick='getTownList(); folder = this.id; mapChange(this.id); loadMap();'>" // this is image source
         // Add to HTML
         document.getElementById('links').innerHTML += imgstr
        
     }
 
     isTownChanged = false;
-    getLinkImage(mapinfo_json)
 }
 
 function getFolderName () {
@@ -204,6 +214,9 @@ function returnSize (num) {
         case 3:
             return 6.5
 
+        case 5: 
+            return 32.5
+
         case 11:
             return 9
 
@@ -218,18 +231,9 @@ function returnSize (num) {
     }
 }
 
-function getLinkImage(mapInfo) {
-
-    // Highlighted location = mapOrigin - imageOrigin
-    let imgstr = "<img src='images/linkImages/WorldMap/linkImg_0.png'" + 
-                 " style='visibility: hidden;'>" // this is image source
-               
-    // Add to HTML
-
-}
-
 
 // Functions to be run on initial load
 mapChange(wSelection.value)
+folder = getFolderName()
 loadMap(); 
 
