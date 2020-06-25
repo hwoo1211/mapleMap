@@ -11,6 +11,7 @@ var backButton = document.querySelector('#back')
 
 var links = []  // Array of maps of links
 let towns = []
+var isWorldChanged = true;
 var isTownChanged = false
 var baseWorldMapUrl = 'https://maplestory.io/api/KMST/1101/map/worldmap/' // WorldMap URL
 var baseMapUrl = 'https://maplestory.io/api/KMST/1101/map/'               // Map URL
@@ -22,6 +23,7 @@ var folder;
 // World Selection Dropdown Box Event
 wSelection.addEventListener("change", function () { // When this box experiences change
     initializeDropdown();         // Delete extraneous towns in tSelect dropdown box
+    isWorldChanged = true
     folder = getFolderName()
     mapChange(wSelection.value)   // Change to appropriate map
     loadMap()                     // Then get the points
@@ -83,6 +85,77 @@ function initializeDropdown() {
     
 }
 
+function loadPoints(jsn_file, originCoords) {
+    let mapLength = jsn_file["maps"].length
+    for(let i = 0; i < mapLength; i++)
+    {
+        let type = jsn_file["maps"][i]["type"] // This gives the type of point (town, starforce, etc)
+
+        // This is the coordinate for the point
+        let point = [originCoords["x"]+jsn_file["maps"][i]["spot"]["value"]["x"], originCoords["y"]+jsn_file["maps"][i]["spot"]["value"]["y"]]
+        
+        // String to add to the HTML
+        let imgstr = "<img src='images/points/mapImage_" + type + ".png'" + // this is image source
+                /*"id='" + getTownName(mapinfo_json["maps"][i]["mapNumbers"][0]) + "'" +*/  // Id of the image
+                "class='pts' style='position: absolute; left: " + // This places the points on the right place on the map
+                (point[0]-returnSize(type)).toString() + "px ; top: " + (point[1]-returnSize(type)).toString() + "px;'>"
+
+        // Add to HTML
+        pts.innerHTML += imgstr
+    }
+}
+
+function loadHighlightImages(jsn_file, originCoords) {
+    let linkLength = jsn_file["links"].length
+    // This loop below could be a function imo
+    for (let j = 0; j < linkLength; j++)
+    {
+        var opt = document.createElement("option")
+
+        opt.text = jsn_file["links"][j]["toolTip"]
+        opt.value = jsn_file["links"][j]["linksTo"]
+        
+        // how do i resolve the below if-else statements
+
+        if (isTownChanged && !towns.includes(opt.text))
+        {
+            opt.id = 'tOption-a'
+            tSelection.options.add(opt, tSelection.selectedIndex + 1);
+            towns.push(opt.value)
+        }
+        else if (towns.includes(opt.text) || isWorldChanged)
+        {
+            opt.id = 'tOption'
+            tSelection.options.add(opt);
+        }
+        /*else
+        {
+            opt.id = 'tOption'
+            tSelection.options.add(opt);
+        }*/
+
+        // The below could be a function as well
+        
+
+        let point = [originCoords["x"]-jsn_file["links"][j]["linkImage"]["origin"]["value"]["x"], 
+        originCoords["y"]-jsn_file["links"][j]["linkImage"]["origin"]["value"]["y"]]
+
+        let imgstr = "<img src='images/linkImages/" + folder + "/linkImg_" + j + ".png'" + 
+                    " id='" + jsn_file["links"][j]["linksTo"] + "'" + 
+                    " class='linkImgs'" + 
+                    " style='position: absolute;" + 
+                            "top: " + point[1] + "px;" + 
+                            "left: " + point[0] + "px;" +
+                            "opacity: 0;'" + 
+                    " onmouseover='this.style.opacity = 1.0;'" + 
+                    " onmouseout='this.style.opacity = 0;'" + 
+                    " onclick='getTownList(); folder = this.id; mapChange(this.id); loadMap();'>" // this is image source
+        // Add to HTML
+        document.getElementById('links').innerHTML += imgstr
+       
+    }
+}
+
 /* This function takes care of loading the points on the map*/
 
 function loadMap() {
@@ -97,79 +170,14 @@ function loadMap() {
         link.removeChild(link.firstChild)
     }
     
-
     let mapinfo_json = JSON.parse(Get(url)); // Fetch JSON file 
     let origin = mapinfo_json["baseImage"][0]["origin"]["value"] // Find the origin of the map file
     
-    let mapLength = mapinfo_json["maps"].length
-    for(let i = 0; i < mapLength; i++)
-    {
-        let type = mapinfo_json["maps"][i]["type"] // This gives the type of point (town, starforce, etc)
-
-        // This is the coordinate for the point
-        let point = [origin["x"]+mapinfo_json["maps"][i]["spot"]["value"]["x"], origin["y"]+mapinfo_json["maps"][i]["spot"]["value"]["y"]]
-        
-        // String to add to the HTML
-        let imgstr = "<img src='images/points/mapImage_" + type + ".png'" + // this is image source
-                /*"id='" + getTownName(mapinfo_json["maps"][i]["mapNumbers"][0]) + "'" +*/  // Id of the image
-                "class='pts' style='position: absolute; left: " + // This places the points on the right place on the map
-                (point[0]-returnSize(type)).toString() + "px ; top: " + (point[1]-returnSize(type)).toString() + "px;'>"
-
-        // Add to HTML
-        document.getElementById('points').innerHTML += imgstr
-    }
-
-    // Add to the tSelect Dropdown box
-    
-    let linkLength = mapinfo_json["links"].length
-    // This loop below could be a function imo
-    for (let j = 0; j < linkLength; j++)
-    {
-        var opt = document.createElement("option")
-
-        opt.text = mapinfo_json["links"][j]["toolTip"]
-        opt.value = mapinfo_json["links"][j]["linksTo"]
-        
-        // how do i resolve the below if-else statements
-
-        if (isTownChanged && !towns.includes(opt.text))
-        {
-            opt.id = 'tOption-a'
-            tSelection.options.add(opt, tSelection.selectedIndex + 1);
-            towns.push(opt.value)
-        }
-        else if (towns.includes(opt.text))
-        {
-            // do nothing
-        }
-        else
-        {
-            opt.id = 'tOption'
-            tSelection.options.add(opt);
-        }
-
-        // The below could be a function as well
-        
-
-        let point = [origin["x"]-mapinfo_json["links"][j]["linkImage"]["origin"]["value"]["x"], 
-                        origin["y"]-mapinfo_json["links"][j]["linkImage"]["origin"]["value"]["y"]]
-
-        let imgstr = "<img src='images/linkImages/" + folder + "/linkImg_" + j + ".png'" + 
-                    " id='" + mapinfo_json["links"][j]["linksTo"] + "'" + 
-                    " class='linkImgs'" + 
-                    " style='position: absolute;" + 
-                            "top: " + point[1] + "px;" + 
-                            "left: " + point[0] + "px;" +
-                            "opacity: 0;'" + 
-                    " onmouseover='this.style.opacity = 1.0;'" + 
-                    " onmouseout='this.style.opacity = 0;'" + 
-                    " onclick='getTownList(); folder = this.id; mapChange(this.id); loadMap();'>" // this is image source
-        // Add to HTML
-        document.getElementById('links').innerHTML += imgstr
-       
-    }
+    loadPoints(mapinfo_json, origin)
+    loadHighlightImages(mapinfo_json, origin)
 
     isTownChanged = false;
+    isWorldChanged = false;
 }
 
 function getFolderName () {
