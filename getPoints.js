@@ -1,22 +1,22 @@
 /* HTML DOM Elements */
 
-var wSelection = document.querySelector('#world')   // World selection dropdown box
-var tSelection = document.querySelector('#town')    // Town selection dropdown box
-var linkImage = document.getElementsByClassName('linkImgs')
-var link = document.getElementById('links')
-var pts = document.getElementById("points")         // All map points
-var backButton = document.querySelector('#back')
+var wSelection = document.querySelector('#world')           // World selection dropdown box
+var tSelection = document.querySelector('#town')            // Town selection dropdown box
+var linkImage = document.getElementsByClassName('linkImgs') // 
+var link = document.getElementById('links')                 // 
+var pts = document.getElementById("points")                 // All map points
+var backButton = document.querySelector('#back')            // Back button
 
 /* Other global variables*/
 
 var links = []  // Array of maps of links
-let towns = []
-var isWorldChanged = true;
-var isTownChanged = false
+let towns = []  // Array of current towns
+var isWorldChanged = true;  // Did wSelection option change?
+var isTownChanged = false   // Did tSelection option change? 
 var baseWorldMapUrl = 'https://maplestory.io/api/KMST/1101/map/worldmap/' // WorldMap URL
 var baseMapUrl = 'https://maplestory.io/api/KMST/1101/map/'               // Map URL
 var url; // Temp url variable that will be used throughout the code
-var folder; 
+var folder; // Folder to fetch the image from
 
 /* Event Listeners */
 
@@ -40,7 +40,9 @@ tSelection.addEventListener("change", function () { // When this box experiences
     }
 });
 
-backButton.addEventListener("click", function () {
+// Back Button event
+
+backButton.addEventListener("click", function () { // dummy function for now; doesn't do anything
     let i = 0;
 })
 
@@ -63,7 +65,8 @@ function Get(url){
         return null;                    // In case of 404, discard. 
 }
 
-function getTownName(mapNum) {
+// Function that returns the town name according to the map number. 
+function getTownName(mapNum) { 
     let tempMap = baseMapUrl + mapNum.toString();
     let tempMapinfo_json = JSON.parse(Get(tempMap))
     let name = tempMapinfo_json["name"]
@@ -85,6 +88,7 @@ function initializeDropdown() {
     
 }
 
+// Loading all the points on the map 
 function loadPoints(jsn_file, originCoords) {
     let mapLength = jsn_file["maps"].length
     for(let i = 0; i < mapLength; i++)
@@ -104,6 +108,8 @@ function loadPoints(jsn_file, originCoords) {
         pts.innerHTML += imgstr
     }
 }
+
+// Loading highlight images per JSON file
 
 function loadHighlightImages(jsn_file, originCoords) {
     let linkLength = jsn_file["links"].length
@@ -150,6 +156,7 @@ function loadHighlightImages(jsn_file, originCoords) {
                     " onmouseover='this.style.opacity = 1.0;'" + 
                     " onmouseout='this.style.opacity = 0;'" + 
                     " onclick='getTownList(); folder = this.id; mapChange(this.id); loadMap();'>" // this is image source
+        
         // Add to HTML
         document.getElementById('links').innerHTML += imgstr
        
