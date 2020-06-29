@@ -6,10 +6,12 @@ var linkImage = document.getElementsByClassName('linkImgs') //
 var link = document.getElementById('links')                 // 
 var pts = document.getElementById("points")                 // All map points
 var backButton = document.querySelector('#back')            // Back button
+var mapImage = document.getElementById("mapvis")
 
 /* Other global variables*/
 
-var links = []  // Array of maps of links
+var wMapRegEx = /[A-Z]*WorldMap[0-9]*/
+let history = []
 let towns = []  // Array of current towns
 var isWorldChanged = true;  // Did wSelection option change?
 var isTownChanged = false   // Did tSelection option change? 
@@ -31,6 +33,7 @@ wSelection.addEventListener("change", function () { // When this box experiences
 
 // Town Seleciton Dropdown Box Event
 tSelection.addEventListener("change", function () { // When this box experiences change
+    history.push(wMapRegEx.exec(mapImage.src))
     getTownList();
     folder = getFolderName()
     if (tSelection.value != 'default') // If the selected option is not default
@@ -43,7 +46,16 @@ tSelection.addEventListener("change", function () { // When this box experiences
 // Back Button event
 
 backButton.addEventListener("click", function () { // dummy function for now; doesn't do anything
-    let i = 0;
+    let backMap = history.pop();
+    if(backMap != undefined)
+    {
+        getTownList();
+        folder = getFolderName()
+        mapChange(backMap)
+        loadMap();
+    }
+    else
+        alert("This is the parent map")
 })
 
 
@@ -155,7 +167,11 @@ function loadHighlightImages(jsn_file, originCoords) {
                             "opacity: 0;'" + 
                     " onmouseover='this.style.opacity = 1.0;'" + 
                     " onmouseout='this.style.opacity = 0;'" + 
-                    " onclick='getTownList(); folder = this.id; mapChange(this.id); loadMap();'>" // this is image source
+                    " onclick='history.push(wMapRegEx.exec(mapImage.src)); " + 
+                    "          getTownList();" + 
+                    "          folder = this.id; " + 
+                    "          mapChange(this.id); " + 
+                    "          loadMap();'>" // this is image source
         
         // Add to HTML
         document.getElementById('links').innerHTML += imgstr
@@ -166,7 +182,6 @@ function loadHighlightImages(jsn_file, originCoords) {
 /* This function takes care of loading the points on the map*/
 
 function loadMap() {
-    links = []     // Empty the array
 
     while (pts.firstChild) // Remove all points from the screen
     {
