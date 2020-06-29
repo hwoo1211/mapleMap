@@ -15,6 +15,7 @@ let history = []
 let towns = []  // Array of current towns
 var isWorldChanged = true;  // Did wSelection option change?
 var isTownChanged = false   // Did tSelection option change? 
+var isBackPressed = false;
 var baseWorldMapUrl = 'https://maplestory.io/api/KMST/1101/map/worldmap/' // WorldMap URL
 var baseMapUrl = 'https://maplestory.io/api/KMST/1101/map/'               // Map URL
 var url; // Temp url variable that will be used throughout the code
@@ -46,16 +47,20 @@ tSelection.addEventListener("change", function () { // When this box experiences
 // Back Button event
 
 backButton.addEventListener("click", function () { // dummy function for now; doesn't do anything
+    tSelection.value = 'default'
+    isBackPressed = true;
     let backMap = history.pop();
     if(backMap != undefined)
     {
         getTownList();
-        folder = getFolderName()
+        folder = getFolderName(backMap)
         mapChange(backMap)
         loadMap();
     }
     else
         alert("This is the parent map")
+
+    isBackPressed = false;
 })
 
 
@@ -135,13 +140,21 @@ function loadHighlightImages(jsn_file, originCoords) {
         
         // how do i resolve the below if-else statements
 
+        let tList = []
+        for (elem of tSelection.options)
+        {
+            tList.push(elem.value)
+        }
+
+        let idx = tList.indexOf(folder)
+
         if (isTownChanged && !towns.includes(opt.text))
         {
             opt.id = 'tOption-a'
-            tSelection.options.add(opt, tSelection.selectedIndex + 1);
+            tSelection.options.add(opt, idx + 1);
             towns.push(opt.value)
         }
-        else if (towns.includes(opt.text) || isWorldChanged)
+        else if (!towns.includes(opt.text) || isWorldChanged)
         {
             opt.id = 'tOption'
             tSelection.options.add(opt);
@@ -202,9 +215,17 @@ function loadMap() {
     isWorldChanged = false;
 }
 
-function getFolderName () {
+function getFolderName (backMap) {
+    backMap = backMap || undefined
     if (tSelection.value === 'default')
-        return wSelection.value
+    {
+        if (isBackPressed)
+        {
+            return backMap
+        }
+        else 
+            return wSelection.value
+    }
     else  
         return tSelection.value
 }
