@@ -177,7 +177,8 @@ function loadHighlightImages(jsn_file, originCoords) {
                     " style='position: absolute;" + 
                             "top: " + point[1] + "px;" + 
                             "left: " + point[0] + "px;" +
-                            "opacity: 0;'" + 
+                            "opacity: 0;" + 
+                            "z-index: 3;'" + 
                     " onmouseover='this.style.opacity = 1.0;'" + 
                     " onmouseout='this.style.opacity = 0;'" + 
                     " onclick='history.push(wMapRegEx.exec(mapImage.src)); " + 
@@ -210,7 +211,7 @@ function loadMap() {
     
     loadPoints(mapinfo_json, origin)
     loadHighlightImages(mapinfo_json, origin)
-
+    changeZVal()
     isTownChanged = false;
     isWorldChanged = false;
 }
@@ -279,6 +280,20 @@ function returnSize (num) {
 
         default:
             return 10
+    }
+}
+
+function changeZVal() {
+    for (img of linkImage)
+    {
+        if (img.naturalWidth > 150)
+        {
+            img.style.zIndex = "3"
+        }
+        else 
+        {
+            img.style.zIndex = "4"
+        }
     }
 }
 
