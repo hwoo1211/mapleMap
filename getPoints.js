@@ -111,13 +111,14 @@ function loadPoints(jsn_file, originCoords) {
     for(let i = 0; i < mapLength; i++)
     {
         let type = jsn_file["maps"][i]["type"] // This gives the type of point (town, starforce, etc)
-
+        let mapId = jsn_file["maps"][i][""]
         // This is the coordinate for the point
-        let point = [originCoords["x"]+jsn_file["maps"][i]["spot"]["value"]["x"], originCoords["y"]+jsn_file["maps"][i]["spot"]["value"]["y"]]
+        let point = [originCoords["x"]+jsn_file["maps"][i]["spot"]["value"]["x"], 
+                     originCoords["y"]+jsn_file["maps"][i]["spot"]["value"]["y"]]
         
         // String to add to the HTML
         let imgstr = "<img src='images/points/mapImage_" + type + ".png'" + // this is image source
-                /*"id='" + getTownName(mapinfo_json["maps"][i]["mapNumbers"][0]) + "'" +*/  // Id of the image
+                "id='" + i + "'" +  // Id of the image
                 "class='pts' style='position: absolute; left: " + // This places the points on the right place on the map
                 (point[0]-returnSize(type)).toString() + "px ; top: " + (point[1]-returnSize(type)).toString() + "px;'>"
 
@@ -166,7 +167,6 @@ function loadHighlightImages(jsn_file, originCoords) {
         }*/
 
         // The below could be a function as well
-        
 
         let point = [originCoords["x"]-jsn_file["links"][j]["linkImage"]["origin"]["value"]["x"], 
         originCoords["y"]-jsn_file["links"][j]["linkImage"]["origin"]["value"]["y"]]
@@ -178,7 +178,7 @@ function loadHighlightImages(jsn_file, originCoords) {
                             "top: " + point[1] + "px;" + 
                             "left: " + point[0] + "px;" +
                             "opacity: 0;" + 
-                            "z-index: 3;'" + 
+                            "z-index: " + 0 + ";'" + 
                     " onmouseover='this.style.opacity = 1.0;'" + 
                     " onmouseout='this.style.opacity = 0;'" + 
                     " onclick='history.push(wMapRegEx.exec(mapImage.src)); " + 
@@ -302,4 +302,3 @@ function changeZVal() {
 mapChange(wSelection.value)
 folder = getFolderName()
 loadMap(); 
-
