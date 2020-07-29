@@ -108,23 +108,53 @@ function initializeDropdown() {
 // Loading all the points on the map 
 function loadPoints(jsn_file, originCoords) {
     let mapLength = jsn_file["maps"].length
-    for(let i = 0; i < mapLength; i++)
-    {
-        let type = jsn_file["maps"][i]["type"] // This gives the type of point (town, starforce, etc)
-        let mapId = jsn_file["maps"][i][""]
-        // This is the coordinate for the point
-        let point = [originCoords["x"]+jsn_file["maps"][i]["spot"]["value"]["x"], 
-                     originCoords["y"]+jsn_file["maps"][i]["spot"]["value"]["y"]]
-        
-        // String to add to the HTML
-        let imgstr = "<img src='images/points/mapImage_" + type + ".png'" + // this is image source
-                "id='" + i + "'" +  // Id of the image
-                "class='pts' style='position: absolute; left: " + // This places the points on the right place on the map
-                (point[0]-returnSize(type)).toString() + "px ; top: " + (point[1]-returnSize(type)).toString() + "px;'>"
 
-        // Add to HTML
-        pts.innerHTML += imgstr
+    if(history.length == 0)
+    {
+        for(let i = 0; i < mapLength; i++)
+        {
+
+
+            let type = jsn_file["maps"][i]["type"] // This gives the type of point (town, starforce, etc)
+            let mapId = jsn_file["maps"][i][""]
+            // This is the coordinate for the point
+            let point = [originCoords["x"]+jsn_file["maps"][i]["spot"]["value"]["x"], 
+                        originCoords["y"]+jsn_file["maps"][i]["spot"]["value"]["y"]]
+            
+            // String to add to the HTML
+            let imgstr = "<img src='images/points/mapImage_" + type + ".png'" + // this is image source
+                    "id='" + i + "'" +  // Id of the image
+                    "class='pts' style='position: absolute; left: " + // This places the points on the right place on the map
+                    (point[0]-returnSize(type)).toString() + "px ; top: " + (point[1]-returnSize(type)).toString() + "px;'>"
+
+            // Add to HTML
+            pts.innerHTML += imgstr
+        }
     }
+    else
+    {
+        for(let i = 0; i < mapLength; i++)
+        {
+
+
+            let type = jsn_file["maps"][i]["type"] // This gives the type of point (town, starforce, etc)
+            let mapId = jsn_file["maps"][i][""]
+            // This is the coordinate for the point
+            let point = [originCoords["x"]+jsn_file["maps"][i]["spot"]["value"]["x"], 
+                        originCoords["y"]+jsn_file["maps"][i]["spot"]["value"]["y"]]
+            
+            // String to add to the HTML
+            let imgstr = "<img src='images/points/mapImage_" + type + ".png'" + // this is image source
+                    "id='" + jsn_file["maps"][i]["mapNumbers"][0] + "'" +  // Id of the image
+                    "class='pts' style='position: absolute; left: " + // This places the points on the right place on the map
+                    (point[0]-returnSize(type)).toString() + "px ; top: " + (point[1]-returnSize(type)).toString() + "px;'>"
+
+            // Add to HTML
+            pts.innerHTML += imgstr
+        }
+    }
+    
+    
 }
 
 // Loading highlight images per JSON file

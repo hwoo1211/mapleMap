@@ -1,0 +1,8 @@
+Rendering Map
+https://maplestory.io/api/<server>/<version>/Map/<MapID>/render/<frame>
+ex: https://maplestory.io/api/KMST/1101/map/10000/render/0
+
+
+API Browser
+https://browse.maplestory.io/
+
