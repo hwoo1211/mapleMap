@@ -113,17 +113,18 @@ function loadPoints(jsn_file, originCoords) {
     {
         for(let i = 0; i < mapLength; i++)
         {
-
-
             let type = jsn_file["maps"][i]["type"] // This gives the type of point (town, starforce, etc)
-            let mapId = jsn_file["maps"][i][""]
+            let mapId = (i == 0) ? jsn_file["maps"][i]["mapNumbers"][1] : jsn_file["maps"][i]["mapNumbers"][0]
+            let mapJsn = JSON.parse(Get(baseMapUrl + mapId))
+            let mapName = (mapJsn['name'] == undefined) ? '(null)' : mapJsn['name'];
             // This is the coordinate for the point
             let point = [originCoords["x"]+jsn_file["maps"][i]["spot"]["value"]["x"], 
                         originCoords["y"]+jsn_file["maps"][i]["spot"]["value"]["y"]]
             
             // String to add to the HTML
             let imgstr = "<img src='images/points/mapImage_" + type + ".png'" + // this is image source
-                    "id='" + i + "'" +  // Id of the image
+                    "id='" + mapId + "'" +  // Id of the image
+                    "title='" + mapName + "'"+
                     "class='pts' style='position: absolute; left: " + // This places the points on the right place on the map
                     (point[0]-returnSize(type)).toString() + "px ; top: " + (point[1]-returnSize(type)).toString() + "px;'>"
 
@@ -135,17 +136,18 @@ function loadPoints(jsn_file, originCoords) {
     {
         for(let i = 0; i < mapLength; i++)
         {
-
-
             let type = jsn_file["maps"][i]["type"] // This gives the type of point (town, starforce, etc)
-            let mapId = jsn_file["maps"][i][""]
+            let mapId = jsn_file["maps"][i]["mapNumbers"][0]
+            let mapJsn = JSON.parse(Get(baseMapUrl + mapId))
+            let mapName = (mapJsn['name'] == undefined) ? '(null)' : mapJsn['name'];
             // This is the coordinate for the point
             let point = [originCoords["x"]+jsn_file["maps"][i]["spot"]["value"]["x"], 
                         originCoords["y"]+jsn_file["maps"][i]["spot"]["value"]["y"]]
             
             // String to add to the HTML
             let imgstr = "<img src='images/points/mapImage_" + type + ".png'" + // this is image source
-                    "id='" + jsn_file["maps"][i]["mapNumbers"][0] + "'" +  // Id of the image
+                    "id='" + mapId + "'" +  // Id of the image
+                    "title='" + mapName + "'"+
                     "class='pts' style='position: absolute; left: " + // This places the points on the right place on the map
                     (point[0]-returnSize(type)).toString() + "px ; top: " + (point[1]-returnSize(type)).toString() + "px;'>"
 
